@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# File to store repositories
-REPO_LIST="$HOME/.wipsync_repos"
+# Directories for wipsync
+WIPSYNC_DIR="$HOME/.wipsync"
+REPO_CLONES_DIR="$WIPSYNC_DIR/repo_clones"
+REPO_LIST="$WIPSYNC_DIR/repo_list"
+
+# Ensure the wipsync directories exist
+mkdir -p "$REPO_CLONES_DIR"
 
 # Check if the path is provided
 if [ $# -eq 0 ]; then
@@ -9,31 +14,31 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-REPO_PATH=$1
+# Resolve the full path of the repository
+REPO_PATH=$(realpath "$1")
 
-# Add repository path to the list, avoiding duplicates
-if ! grep -Fxq "$REPO_PATH" "$REPO_LIST"; then
-  # Check if the given path is a valid Git repository
-  if [ ! -d "$REPO_PATH/.git" ]; then
-    echo "The given path does not appear to be a Git repository: $REPO_PATH"
-    exit 1
-  fi
+# Extract repo name for cloning directory
+REPO_NAME=$(basename "$REPO_PATH")
 
-  # Navigate to the repository directory
-  cd "$REPO_PATH" || exit
-  
-  # Check if the wip-branch exists in the local repository
-  if ! git rev-parse --verify wip-branch >/dev/null 2>&1; then
-    # Branch doesn't exist, so let's create it without switching to it
-    git branch wip-branch
-    echo "wip-branch created in $REPO_PATH"
-  else
-    echo "wip-branch already exists in $REPO_PATH"
-  fi
-  
-  # Add the repository to the list
-  echo "$REPO_PATH" >> "$REPO_LIST"
+# Validate Git repository
+if [ ! -d "$REPO_PATH/.git" ]; then
+  echo "The given path does not appear to be a Git repository: $REPO_PATH"
+  exit 1
+fi
+
+# Check if the repository is already added
+if grep -Fq "$REPO_PATH" "$REPO_LIST" &>/dev/null; then
+  echo "Repository already in list for WIP syncing: $REPO_PATH"
+  exit 1
+fi
+
+# Clone the repository
+git clone "$REPO_PATH" "$REPO_CLONES_DIR/$REPO_NAME" &>/dev/null
+
+if [ $? -eq 0 ]; then
+  # Add the repository full path and name to the list
+  echo "$REPO_PATH:$REPO_NAME" >> "$REPO_LIST"
   echo "Repository added for WIP syncing: $REPO_PATH"
 else
-  echo "Repository already in list for WIP syncing: $REPO_PATH"
+  echo "Failed to clone repository: $REPO_PATH"
 fi
