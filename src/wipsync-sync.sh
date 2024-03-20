@@ -32,12 +32,12 @@ sync_changes() {
     if ! git rev-parse --verify --quiet "wipsync/$current_branch" > /dev/null; then
         echo "Creating branch: wipsync/$current_branch"
         git checkout -b "wipsync/$current_branch"
+        # Since the branch is new, no need to pull from it. Skip straight to adding changes.
     else
         git checkout "wipsync/$current_branch"
+        # If the branch already exists, it's safe to attempt to pull from it.
+        git pull origin "wipsync/$current_branch" --no-edit || true
     fi
-
-    # Pull latest changes for the branch
-    git pull origin "wipsync/$current_branch" --no-edit || true
 
     # Rsync changes from the original repo, excluding .git and other non-tracked files
     rsync -av --exclude='.git/' --exclude='.gitignore' --filter=':- .gitignore' "$original_repo_path/" "$clone_path/"

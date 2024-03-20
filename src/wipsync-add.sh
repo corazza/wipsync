@@ -36,6 +36,15 @@ fi
 git clone "$REPO_PATH" "$REPO_CLONES_DIR/$REPO_NAME" &>/dev/null
 
 if [ $? -eq 0 ]; then
+  # Enter the cloned repository directory
+  pushd "$REPO_CLONES_DIR/$REPO_NAME" > /dev/null
+
+  # Set the push URL for 'origin' to ensure it matches the fetch URL
+  # This step may be adapted if a different push URL is needed
+  git remote set-url --push origin "$REPO_PATH"
+
+  popd > /dev/null
+
   # Add the repository full path and name to the list
   echo "$REPO_PATH:$REPO_NAME" >> "$REPO_LIST"
   echo "Repository added for WIP syncing: $REPO_PATH"

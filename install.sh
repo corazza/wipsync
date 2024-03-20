@@ -9,8 +9,11 @@ TARGET_DIR="$HOME/.local/bin"
 # Create the target directory if it doesn't already exist
 mkdir -p "$TARGET_DIR"
 
-# Copy the functional scripts to the target directory
-cp "$SRC_DIR"/wipsync* "$TARGET_DIR/"
+# Copy the functional scripts to the target directory and rename them to remove the .sh extension
+for script in "$SRC_DIR"/wipsync*.sh; do
+  script_basename=$(basename "$script" .sh) # Remove the .sh extension
+  cp "$script" "$TARGET_DIR/$script_basename"
+done
 
 # Make sure the scripts are executable
 chmod +x "$TARGET_DIR"/wipsync*
