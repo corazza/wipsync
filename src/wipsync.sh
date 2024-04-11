@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Check for at least one argument
+# Default to status if no arguments are provided
 if [ $# -eq 0 ]; then
-  echo "Usage: wipsync {add|remove|sync} [...]"
-  exit 1
+  wipsync-status
+  exit 0
 fi
 
 case "$1" in
@@ -22,7 +22,7 @@ case "$1" in
     wipsync-status
     ;;
   *)
-    echo "Invalid command. Usage: wipsync {add|remove|sync}"
+    echo "Invalid command. Usage: wipsync {add|remove|status|sync}"
     exit 1
     ;;
 esac

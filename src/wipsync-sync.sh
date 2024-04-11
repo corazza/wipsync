@@ -16,7 +16,7 @@ commit_and_push() {
     if [ -n "$(git status --porcelain)" ]; then
         echo "Adding uncommitted changes in $repo..."
         git add .
-        git commit -m "WipSync auto-commit on $(date)"
+        git commit -m "WIPSync auto-commit on $(date)"
         has_new_commit=1
     else
         has_new_commit=0
