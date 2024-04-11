@@ -18,6 +18,9 @@ case "$1" in
   sync)
     wipsync-sync
     ;;
+  status)
+    wipsync-status
+    ;;
   *)
     echo "Invalid command. Usage: wipsync {add|remove|sync}"
     exit 1
