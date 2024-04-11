@@ -8,7 +8,6 @@ if [ ! -f "$DIR_LIST" ]; then
     exit 1
 fi
 
-# Function to check and commit uncommitted changes
 commit_and_push() {
     local repo=$1
     cd "$repo" || return
@@ -18,11 +17,20 @@ commit_and_push() {
         echo "Adding uncommitted changes in $repo..."
         git add .
         git commit -m "WipSync auto-commit on $(date)"
+        has_new_commit=1
+    else
+        has_new_commit=0
     fi
     
-    # Push the commits to the default remote's default branch
-    echo "Pushing from $repo..."
-    git push
+    # Check if there are commits to push. This considers both the new auto-commit and any previous unpushed commits.
+    local to_push=$(git rev-list @{u}..HEAD 2>/dev/null)
+    
+    if [[ -n $to_push || $has_new_commit -eq 1 ]]; then
+        echo "Pushing from $repo..."
+        git push
+    else
+        echo "$repo is fully synced. No push needed."
+    fi
     cd - > /dev/null
 }
 
