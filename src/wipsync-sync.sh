@@ -12,6 +12,10 @@ commit_and_push() {
     local repo=$1
     cd "$repo" || return
     
+    # Pull latest changes from the remote repository
+    echo "Pulling latest changes for $repo..."
+    git pull --rebase
+
     # Check for uncommitted changes using git status
     if [ -n "$(git status --porcelain)" ]; then
         echo "Adding uncommitted changes in $repo..."
