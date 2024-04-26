@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DIR_LIST="$HOME/.wipsync/dir_list"
+declare -a repos=()
 declare -a dirty_repos=()
 
 # Ensure the dir_list file exists
@@ -14,7 +15,9 @@ check_git_status() {
     local repo=$1
     if [ -n "$(git -C "$repo" status --porcelain)" ]; then
         dirty_repos+=("$repo")
+        return 1
     fi
+    return 0
 }
 
 # Iterate over parent directories to find all Git repositories
@@ -28,32 +31,24 @@ while IFS= read -r dir; do
     # Find and process all Git repositories within the directory
     while IFS= read -r gitdir; do
         repo=$(dirname "$gitdir")
+        repos+=("$repo")
         check_git_status "$repo"
     done < <(find "$dir" -type d -name ".git")
 done < "$DIR_LIST"
 
-# Function that prints the list of dirty repositories (takes the list as an argument)
-print_dirty_repos() {
-    local -n repos=$1
-    echo "Dirty repos:"
+# Function that prints the list of all repositories with a star (*) before the dirty ones
+print_all_repos_with_dirty_marker() {
     for repo in "${repos[@]}"; do
-        echo "* $repo"
+        local marker="   "
+        for dirty in "${dirty_repos[@]}"; do
+            if [[ $repo == $dirty ]]; then
+                marker="(*)"
+                break
+            fi
+        done
+        echo "$marker $repo"
     done
 }
 
-
-# Print repositories with uncommitted changes
-if [ ${#dirty_repos[@]} -eq 0 ]; then
-    echo "No repositories with uncommitted changes."
-else
-    print_dirty_repos dirty_repos
-
-    # Print git status for each dirty repository
-    for repo in "${dirty_repos[@]}"; do
-        echo -e "\n============================\n$repo:\n============================\n"
-        git -C "$repo" status
-    done
-
-    echo -e ""
-    print_dirty_repos dirty_repos
-fi
+# Print all repositories, marking dirty ones
+print_all_repos_with_dirty_marker
