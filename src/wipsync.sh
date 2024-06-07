@@ -15,14 +15,11 @@ case "$1" in
     shift
     wipsync-remove "$@"
     ;;
-  sync)
-    wipsync-sync
-    ;;
   status)
     wipsync-status
     ;;
   *)
-    echo "Invalid command. Usage: wipsync {add|remove|status|sync}"
+    echo "Invalid command. Usage: wipsync {add|remove|status}"
     exit 1
     ;;
 esac
