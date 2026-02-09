@@ -1,6 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
-[ -z "$1" ] && { echo "Error: No directory specified."; exit 1; }
+[ -z "${1:-}" ] && { echo "Error: No directory specified."; exit 1; }
 
 # Expands the directory name to its absolute path
 DIR=$(readlink -f "$1")
