@@ -68,6 +68,22 @@ This will list all repositories found within the tracked directories.
 - `(^)` — repository has commits that haven't been pushed to the upstream branch
 - `(*^)` — both uncommitted changes and unpushed commits
 
+### List Tracked Directories
+
+To see all directories currently being tracked:
+
+```bash
+wipsync list
+```
+
+### Help
+
+To see usage information and available commands:
+
+```bash
+wipsync help
+```
+
 ## Prompt Integration
 
 After installation, your bash prompt will automatically show `(*)` whenever any tracked repository has uncommitted changes. The indicator appears at the beginning of your prompt:

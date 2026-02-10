@@ -2,12 +2,14 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: wipsync {add|remove|status}"
+    echo "Usage: wipsync {add|remove|status|list|help}"
     echo ""
     echo "Commands:"
     echo "  add <dir>     Add a directory to track for git repositories"
     echo "  remove <dir>  Remove a directory from tracking"
     echo "  status        Show status of all tracked repositories (default)"
+    echo "  list          List all currently tracked directories"
+    echo "  help          Show this help message"
     echo ""
     echo "Status markers:"
     echo "  (*)   Uncommitted changes"
@@ -33,7 +35,10 @@ case "$1" in
   status)
     wipsync-status
     ;;
-  -h|--help)
+  list)
+    wipsync-list
+    ;;
+  help|-h|--help)
     usage
     ;;
   *)
