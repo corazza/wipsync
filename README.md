@@ -129,3 +129,12 @@ systemctl --user restart wipsync-daemon  # restart
 systemctl --user stop wipsync-daemon     # stop
 journalctl --user -u wipsync-daemon      # view logs
 ```
+
+## Tests
+
+```bash
+uv run --no-project python -m unittest discover -s tests -v
+```
+
+The tests run every command and `install.sh` in a temporary home directory.
+They replace `systemctl` with a recorder, so they change no real service, prompt file or `~/.bashrc`.
