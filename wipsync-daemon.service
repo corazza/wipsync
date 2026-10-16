@@ -3,7 +3,7 @@ Description=wipsync — background dirty-repo checker
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/wipsync-daemon
+ExecStart=%h/.local/bin/wipsync daemon
 Restart=on-failure
 RestartSec=5
 

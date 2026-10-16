@@ -15,10 +15,13 @@ To install `wipsync`, run the provided installation script:
 This script will:
 
 1. Create a `~/.local/bin` directory if it doesn't exist.
-2. Copy the scripts to `~/.local/bin` and remove the `.sh` extension.
+2. Copy the one command, `src/wipsync.sh`, to `~/.local/bin/wipsync`.
 3. Add `~/.local/bin` to your `PATH` in `~/.bashrc` if it's not already there.
-4. Install a **systemd user service** (`wipsync-daemon`) that periodically checks tracked repos in the background.
+4. Install a **systemd user service** (`wipsync-daemon`) that runs `wipsync daemon` to check tracked repos in the background.
 5. Add a **prompt integration** to `~/.bashrc` that shows `(*)` in your terminal prompt when any tracked repo has uncommitted changes.
+
+Earlier versions also installed `wipsync-add`, `wipsync-remove`, `wipsync-list`, `wipsync-status` and `wipsync-daemon` in `~/.local/bin`.
+Delete those five files after you install this version.
 
 After installation, please restart your terminal or run:
 
@@ -56,13 +59,8 @@ To check the status of all repositories in your tracked directories:
 wipsync status
 ```
 
-Or simply:
-
-```bash
-wipsync
-```
-
 This will list all repositories found within the tracked directories.
+The search stops at the first repository on each path, so clones and test fixtures inside a repository, such as those in an ignored `tmp/` directory, are not listed.
 
 - `(*)` — repository has uncommitted changes (dirty working tree or staged files)
 - `(^)` — repository has commits that haven't been pushed to the upstream branch
@@ -84,6 +82,8 @@ To see usage information and available commands:
 wipsync help
 ```
 
+Running `wipsync` without a command shows the same help and changes nothing.
+
 ## Prompt Integration
 
 After installation, your bash prompt will automatically show `(*)` whenever any tracked repository has uncommitted changes. The indicator appears at the beginning of your prompt:
@@ -94,7 +94,7 @@ yann@host:~/repos/project$             # all clean
 (venv) (*) yann@host:~/repos/project$  # with a Python venv active
 ```
 
-This works via a background daemon (`wipsync-daemon`) that checks your tracked repos every 30 seconds and writes the result to `~/.wipsync/prompt_status`. The prompt itself just reads that one-byte file — there is zero git overhead per prompt.
+This works via a background daemon (`wipsync daemon`, run by the `wipsync-daemon` user service) that checks your tracked repos every 30 seconds and writes the result to `~/.wipsync/prompt_status`. The prompt itself just reads that one-byte file — there is zero git overhead per prompt.
 
 ### Configuration
 

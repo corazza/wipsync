@@ -13,14 +13,9 @@ mkdir -p "$TARGET_DIR"
 # Ensure ~/.wipsync directory exists
 mkdir -p "$HOME/.wipsync"
 
-# Copy the functional scripts to the target directory and rename them to remove the .sh extension
-for script in "$SRC_DIR"/wipsync*.sh; do
-  script_basename=$(basename "$script" .sh) # Remove the .sh extension
-  cp "$script" "$TARGET_DIR/$script_basename"
-done
-
-# Make sure the scripts are executable
-chmod +x "$TARGET_DIR"/wipsync*
+# Install the one command; the daemon is its `wipsync daemon` command
+cp "$SRC_DIR/wipsync.sh" "$TARGET_DIR/wipsync"
+chmod +x "$TARGET_DIR/wipsync"
 
 # --- Prompt integration ---
 # Install the prompt snippet to ~/.wipsync/prompt.bash
@@ -41,7 +36,9 @@ mkdir -p "$SYSTEMD_USER_DIR"
 cp "$(dirname "$0")/wipsync-daemon.service" "$SYSTEMD_USER_DIR/wipsync-daemon.service"
 
 systemctl --user daemon-reload
-systemctl --user enable --now wipsync-daemon.service
+systemctl --user enable wipsync-daemon.service
+# Restart, so that a running daemon of an earlier version stops.
+systemctl --user restart wipsync-daemon.service
 echo "wipsync-daemon service enabled and started."
 
 # --- PATH ---
