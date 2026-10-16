@@ -89,9 +89,9 @@ Running `wipsync` without a command shows the same help and changes nothing.
 After installation, your bash prompt will automatically show `(*)` whenever any tracked repository has uncommitted changes. The indicator appears at the beginning of your prompt:
 
 ```
-(*) yann@host:~/repos/project$         # dirty repos detected
-yann@host:~/repos/project$             # all clean
-(venv) (*) yann@host:~/repos/project$  # with a Python venv active
+(*) user@host:~/repos/project$         # dirty repos detected
+user@host:~/repos/project$             # all clean
+(venv) (*) user@host:~/repos/project$  # with a Python venv active
 ```
 
 This works via a background daemon (`wipsync daemon`, run by the `wipsync-daemon` user service) that checks your tracked repos every 30 seconds and writes the result to `~/.wipsync/prompt_status`. The prompt itself just reads that one-byte file — there is zero git overhead per prompt.
