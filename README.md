@@ -2,7 +2,8 @@
 
 Track the status of your git repositories across directories and get reminded of uncommitted or unpushed changes.
 
-> **Note:** Requires GNU coreutils (`readlink -f`). Works on Linux out of the box. macOS users need `brew install coreutils`.
+> **Note:** Requires Linux with a systemd user manager, which runs the background daemon.
+> On WSL, enable systemd before you install.
 
 ## Installation
 
@@ -19,6 +20,8 @@ This script will:
 3. Add `~/.local/bin` to your `PATH` in `~/.bashrc` if it's not already there.
 4. Install a **systemd user service** (`wipsync-daemon`) that runs `wipsync daemon` to check tracked repos in the background.
 5. Add a **prompt integration** to `~/.bashrc` that shows `(*)` in your terminal prompt when any tracked repo has uncommitted changes.
+
+The script stops before it changes anything when no systemd user manager is running.
 
 Earlier versions also installed `wipsync-add`, `wipsync-remove`, `wipsync-list`, `wipsync-status` and `wipsync-daemon` in `~/.local/bin`.
 Delete those five files after you install this version.
@@ -98,11 +101,22 @@ This works via a background daemon (`wipsync daemon`, run by the `wipsync-daemon
 
 ### Configuration
 
-Set the `WIPSYNC_INTERVAL` environment variable to change the check interval (in seconds, default: 30):
+The daemon reads the check interval from `WIPSYNC_INTERVAL`, in seconds, with a default of 30.
+The daemon runs as a systemd user service, so a variable set in your shell does not reach it; set it in a service override instead:
 
 ```bash
-# In your systemd override or environment
-WIPSYNC_INTERVAL=60
+systemctl --user edit wipsync-daemon
+```
+
+Add these lines in the editor that opens, then restart the service:
+
+```ini
+[Service]
+Environment=WIPSYNC_INTERVAL=60
+```
+
+```bash
+systemctl --user restart wipsync-daemon
 ```
 
 ### Managing the Daemon

@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# The daemon is a systemd user service, so stop before any change when no user manager runs.
+if ! command -v systemctl >/dev/null || ! systemctl --user show-environment >/dev/null 2>&1; then
+  echo "wipsync: install.sh requires Linux with a systemd user manager; on WSL, enable systemd first" >&2
+  exit 1
+fi
+
 # Define the source directory of the scripts within the wipsync repository
 SRC_DIR="$(dirname "$0")/src"
 
