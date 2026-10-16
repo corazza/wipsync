@@ -2,7 +2,7 @@
 
 Track the status of your git repositories across directories and get reminded of uncommitted or unpushed changes.
 
-> **Note:** Requires Linux with a systemd user manager, which runs the background daemon.
+> **Note:** `install.sh` and the prompt indicator require Linux with a systemd user manager, which runs the background daemon.
 > On WSL, enable systemd before you install.
 
 ## Installation
@@ -89,7 +89,8 @@ Running `wipsync` without a command shows the same help and changes nothing.
 
 ## Prompt Integration
 
-After installation, your bash prompt will automatically show `(*)` whenever any tracked repository has uncommitted changes. The indicator appears at the beginning of your prompt:
+After installation, your bash prompt will automatically show `(*)` whenever any tracked repository has uncommitted changes.
+The indicator appears at the beginning of your prompt:
 
 ```
 (*) user@host:~/repos/project$         # dirty repos detected
@@ -97,7 +98,8 @@ user@host:~/repos/project$             # all clean
 (venv) (*) user@host:~/repos/project$  # with a Python venv active
 ```
 
-This works via a background daemon (`wipsync daemon`, run by the `wipsync-daemon` user service) that checks your tracked repos every 30 seconds and writes the result to `~/.wipsync/prompt_status`. The prompt itself just reads that one-byte file — there is zero git overhead per prompt.
+This works via a background daemon (`wipsync daemon`, run by the `wipsync-daemon` user service) that checks your tracked repos every 30 seconds and writes the result to `~/.wipsync/prompt_status`.
+The prompt itself just reads that one-byte file — there is zero git overhead per prompt.
 
 ### Configuration
 
@@ -136,5 +138,5 @@ journalctl --user -u wipsync-daemon      # view logs
 uv run --no-project python -m unittest discover -s tests -v
 ```
 
-The tests run every command and `install.sh` in a temporary home directory.
-They replace `systemctl` with a recorder, so they change no real service, prompt file or `~/.bashrc`.
+The tests run every command and `install.sh` with a temporary home directory, so they change no real prompt file, tracked list or `~/.bashrc`.
+The `install.sh` tests replace `systemctl` with a recorder, so they change no real service.
