@@ -5,7 +5,7 @@ The repository is public, so commit no machine name, account, address, absolute 
 Before a push, scan the tracked files with the private patterns in `~/.config/submit/private.toml`; the command must print nothing:
 
 ```bash
-git grep -nIiP -e '/home/[^/\s]+/' -e '/Users/[^/\s]+/' -f <(uv run --no-project python -c 'import pathlib, tomllib; print("\n".join(tomllib.loads((pathlib.Path.home() / ".config/submit/private.toml").read_text())["patterns"]))')
+git grep -nIiP -e '/home/[^/\s[]+/' -e '/Users/[^/\s[]+/' -f <(uv run --no-project python -c 'import pathlib, tomllib; print("\n".join(tomllib.loads((pathlib.Path.home() / ".config/submit/private.toml").read_text())["patterns"]))')
 ```
 
 `wipsync` alone prints the help page and changes nothing; every action needs its command word.
