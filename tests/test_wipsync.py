@@ -206,6 +206,7 @@ class WipsyncTests(unittest.TestCase):
         )
         bashrc = (self.home / ".bashrc").read_text()
         self.assertEqual(bashrc.count('source "$HOME/.wipsync/prompt.bash"'), 1)
+        self.assertEqual(bashrc.count('export PATH="$PATH:%s"' % (self.home / ".local/bin")), 1)
         calls = (self.directory / "systemctl-calls").read_text().splitlines()
         self.assertIn("--user enable wipsync-daemon.service", calls)
         self.assertIn("--user restart wipsync-daemon.service", calls)

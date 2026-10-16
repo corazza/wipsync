@@ -48,12 +48,11 @@ systemctl --user restart wipsync-daemon.service
 echo "wipsync-daemon service enabled and started."
 
 # --- PATH ---
-# Check if the target directory is in the user's PATH (exact match between colons)
-if ! echo ":$PATH:" | grep -q ":$TARGET_DIR:"; then
+# Add the target directory to PATH in .bashrc, unless the shell or an earlier run already has it
+PATH_LINE="export PATH=\"\$PATH:$TARGET_DIR\""
+if ! echo ":$PATH:" | grep -q ":$TARGET_DIR:" && ! grep -Fxq "$PATH_LINE" "$HOME/.bashrc" 2>/dev/null; then
   echo "Adding $TARGET_DIR to PATH in .bashrc"
-
-  # Add the target directory to PATH in .bashrc
-  echo "export PATH=\"\$PATH:$TARGET_DIR\"" >> "$HOME/.bashrc"
+  echo "$PATH_LINE" >> "$HOME/.bashrc"
 fi
 
 echo ""

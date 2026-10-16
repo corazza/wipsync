@@ -10,7 +10,7 @@ The other two must print nothing:
 ```bash
 pattern="$(uv run --no-project --python '>=3.11' python -c 'import pathlib, tomllib; patterns = tomllib.loads((pathlib.Path.home() / ".config/submit/private.toml").read_text())["patterns"] + [r"/(home|Users)/[\w.-]+"]; print("|".join(f"(?:{p})" for p in patterns))')" || echo 'the private patterns could not be read; do not push' >&2
 git grep -nIiP -e "$pattern" HEAD $(git rev-list '@{u}..HEAD')
-git log --format='%H %an <%ae>%n%B' '@{u}..HEAD' | grep -niP -e "$pattern"
+git log --format='%H %an <%ae> %cn <%ce>%n%B' --name-only '@{u}..HEAD' | grep -niP -e "$pattern"
 ```
 
 `wipsync` alone prints the help page and changes nothing; every action needs its command word.
