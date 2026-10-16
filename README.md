@@ -115,21 +115,3 @@ systemctl --user restart wipsync-daemon  # restart
 systemctl --user stop wipsync-daemon     # stop
 journalctl --user -u wipsync-daemon      # view logs
 ```
-
-## Extras
-
-### Reminder Image Generator
-
-A Python script is included in `py/main.py` that generates a `reminder.png` image with the text "Did you commit and push your code today?".
-
-To use it, ensure you have `Pillow` >= 10.0 installed:
-
-```bash
-pip install Pillow
-```
-
-Then run the script:
-
-```bash
-python3 py/main.py
-```
