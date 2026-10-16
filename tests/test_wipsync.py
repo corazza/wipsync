@@ -20,9 +20,14 @@ class WipsyncTests(unittest.TestCase):
         self.state = self.home / ".wipsync"
         self.projects = self.directory / "projects with spaces"
         self.projects.mkdir()
-        # Git reads no configuration of the real user, so no hook or excludes file changes a fixture.
+        # Git reads no variable or configuration of the caller, so a run from a Git hook cannot write to this repository's index.
+        # Without the user bus, a command that a test forgot to replace cannot reach a real service.
+        inherited = {
+            name: value for name, value in os.environ.items()
+            if not name.startswith("GIT_") and name not in ("XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS")
+        }
         self.env = {
-            **os.environ,
+            **inherited,
             "HOME": str(self.home),
             "XDG_CONFIG_HOME": str(self.home / ".config"),
             "GIT_CONFIG_GLOBAL": os.devnull,
@@ -132,6 +137,7 @@ class WipsyncTests(unittest.TestCase):
         locked.mkdir(parents=True)
         locked.chmod(0)
         self.addCleanup(locked.chmod, 0o700)
+        self.assertFalse(os.access(locked, os.R_OK), "run the tests as a user without root, who cannot read the directory")
         later = self.repository(self.projects / "later")
         self.track(first)
         self.track(self.projects)
@@ -176,7 +182,7 @@ class WipsyncTests(unittest.TestCase):
         return subprocess.run(
             ["bash", str(ROOT / "install.sh")],
             cwd=self.directory, text=True, capture_output=True, timeout=30,
-            env={**self.env, "PATH": str(bin_directory) + os.pathsep + os.environ["PATH"]},
+            env={**self.env, "PATH": str(bin_directory) + os.pathsep + self.env["PATH"]},
         )
 
     def test_install_without_a_user_manager_changes_nothing(self) -> None:
@@ -184,6 +190,7 @@ class WipsyncTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("systemd user manager", result.stderr)
         self.assertEqual(list(self.home.iterdir()), [])
+        self.assertEqual((self.directory / "systemctl-calls").read_text().splitlines(), ["--user show-environment"])
 
     def test_install_copies_the_files_enables_the_daemon_and_can_be_repeated(self) -> None:
         self.assertEqual(self.install(0).returncode, 0)
